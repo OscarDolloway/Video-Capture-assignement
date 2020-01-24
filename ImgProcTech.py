@@ -20,6 +20,14 @@ import ffmpeg
 import sys
 import subprocess as sp
 from threading import Timer
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+from requests import get
+import sys
+import numpy as np
+import re
+count = 1
+getsites = []
 
 
 FFMPEG_BIN ='/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/ffmpeglib/bin/ffmpeg'
@@ -139,12 +147,16 @@ def vidconvert(video_input, video_output):
 def m3u8test():
     
     VIDEO_URL = m3u8URL
-
+    
     cap=cv2.VideoCapture(VIDEO_URL)
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     
     current_frame = 0
+    
+# =============================================================================
+#     get video data
+# =============================================================================
     while (True):
         ret, frame = cap.read()
         #print(frame)
@@ -207,9 +219,6 @@ def storingtest1():
             #print(current_frame)
            
             a = cv2.imshow("video", frame)
-            
-            
-        
             out.write(cv2.flip(frame, 180))
             #print(out.get(cv2.CAP_PROP_POS_MSEC))
         else:
@@ -227,7 +236,30 @@ def storingtest1():
         
         
 # =============================================================================
-storingtest1()
+#storingtest1()
 # =============================================================================
 
 
+def beginnerscraper():
+    url = "http://xmtvplayer.com/snippet/sample-m3u-file"
+    #content = global
+    site = urlopen(url).read()
+
+    #print(site)
+    #for i in content:
+        #print(i)
+    soup = BeautifulSoup(site,features="lxml",)
+    content = soup.find_all("p", {"class": "box"},"")
+    b = soup.find_all("p")
+    #sitelist = [str(b)]
+    #print(sitelist)
+    sitelist = b.text
+    links = re.findall("(?P<element>(https?)[\w\.\/\-\\:]+)",sitelist)#insert regex
+    x = re.search("p(?P<element>[\d]+)",All)
+    
+    
+    
+    #print (soup.prettify())
+    #print (title)
+
+beginnerscraper()
