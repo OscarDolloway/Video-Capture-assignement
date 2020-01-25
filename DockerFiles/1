@@ -1,0 +1,17 @@
+#getting base image
+FROM ubuntu
+
+MAINTAINER oscar dolloway <oscar.dolloway@hotmail.co.uk>
+RUN apt-get update
+RUN apt install python3-pip
+RUN pip install opencv-python
+
+
+CMD ["echo", "Hello World.."]
+
+
+
+
+
+
+

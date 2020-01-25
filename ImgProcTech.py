@@ -10,38 +10,33 @@ Created on Wed Aug 28 13:13:57 2019
 from __future__ import print_function
 import os
 import numpy as np
-import scipy
 import matplotlib.pyplot as plt
 import sys
 import matplotlib.image as mpimg
 from matplotlib.pyplot import figure, imshow, axis
 import cv2
-import ffmpeg
 import sys
 import subprocess as sp
 from threading import Timer
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from requests import get
-import sys
 import numpy as np
 import re
+import requests
 count = 1
 getsites = []
 
 
 FFMPEG_BIN ='/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/ffmpeglib/bin/ffmpeg'
-
-path1 = '/Users/oscardolloway/Documents/GitHub/LogoDetection/Logos/'
-
-files = os.listdir(path1)
+ffprobe = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/ffmpeglib/bin/ffprobe'
 #cascPath = sys.argv[1]
 face_cascade = cv2.CascadeClassifier('/Users/oscardolloway/Documents/GitHub/LogoDetection/haarcascade_frontalface_default.xml')
 Video = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/jelly.mp4'
 
 #video_capture = cv2.VideoCapture(0)
 
-m3u8URL = 'http://95.170.215.120/hls/m3u8/BT-Sport-1HD.m3u8'
+m3u8URL = 'http://95.170.215.120/hls/m3u8-1HD.m3u8'
 m3u8_URL = 'http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8'
 
 # =============================================================================
@@ -112,6 +107,8 @@ def m3u8capture():
 def live_cap():
     
     VIDEO_URL = m3u8URL
+    
+    
     pipe = sp.Popen([ FFMPEG_BIN, "-i", VIDEO_URL,
             # no text output
                # disable audio
@@ -188,12 +185,20 @@ def Time ():
     
     if t == 60.0:
         t.cancel()
-    
-def storingtest1():
-    
-    VIDEO_URL = m3u8URL
+        
 
-    cap=cv2.VideoCapture(VIDEO_URL)
+#img1 = mpimg.imread('/Users/oscardolloway/Documents/GitHub/LogoDetection/greyimages/'+str(i))
+viddir = 'Video-Capture-assignement/'
+files = os.listdir(viddir)
+output_dir = os.path.abspath(os.path.curdir)
+VIDEO_URL = m3u8URL
+
+
+def storingtest1():
+        
+    cap = cv2.VideoCapture(VIDEO_URL)
+    
+    
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -201,6 +206,8 @@ def storingtest1():
     current_frame = 0
     
     a_count = 0
+    
+    
     
     while (cap.isOpened()):
         
@@ -229,7 +236,7 @@ def storingtest1():
         
         #print(out.get(cv2.CAP_PROP_POS_MSEC))
         current_frame +=1
-    print('a',a_count)
+    #print('a',a_count)
     cap.release()
     out.release()
     cv2.destroyAllWindows()
@@ -238,28 +245,80 @@ def storingtest1():
 # =============================================================================
 #storingtest1()
 # =============================================================================
+from pathlib import Path
+def getvidmeta ():
+    data =  [ ffprobe, "-show_format", 
+             "-f", "ffmetadata", 'in.txt']
+    pipe = sp.Popen(data, stdout = sp.PIPE,bufsize=10**8)
+    
+#getvidmeta()
+import json
+import pprint
+def probe_file(filename):
+    
+    
+    cmnd = ['ffprobe'] + '-show_format -pretty -loglevel quiet'.split()+[filename]
+    ffout = sp.check_output(cmnd).decode('utf-8')
+    
+    
+    
+    
+    
+    #cmnd = ['ffprobe', '-v quiet -print_format json  -show_format, -show_streams',filename]
+    #cmnd = [ffprobe , '-i', filename, '-show_entries' ,  'frame=pkt_pts_time,pkt_duration_time,interlaced_frame']
+    #p = sp.Popen(cmnd, stdout=sp.PIPE, stderr=sp.PIPE)
+    #p1 = sp.Popen(json, stdout=sp.PIPE, stderr=sp.PIPE)
+    #print (filename)
+    #out, err =  p.communicate()
+    #out1, err =  p1.communicate()
+    #print ("==========output==========")
+    #print (out)
+    #print(out1)
+    #if err:
+    #    print ("========= error ========")
+    #    print (err)
+
+#probe_file('live.mp4')
 
 
 def beginnerscraper():
     url = "http://xmtvplayer.com/snippet/sample-m3u-file"
     #content = global
     site = urlopen(url).read()
-
     #print(site)
-    #for i in content:
-        #print(i)
-    soup = BeautifulSoup(site,features="lxml",)
+    try:
+        page = urlopen(url)
+    except:
+        print('site not valid')
+        sys.exit()
+    response = get(url)
+    print(response)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    #soup = BeautifulSoup(site,features="lxml",)
     content = soup.find_all("p", {"class": "box"},"")
     b = soup.find_all("p")
-    #sitelist = [str(b)]
-    #print(sitelist)
-    sitelist = b.text
-    links = re.findall("(?P<element>(https?)[\w\.\/\-\\:]+)",sitelist)#insert regex
-    x = re.search("p(?P<element>[\d]+)",All)
+    content =  soup.find_all("p", {"class": "box"},"")
+    All = soup.text
+    links = re.findall("(?P<element>[\w\.\/\-\\:]+m3u8?)",All)
+    links = set(links)
+    #x = re.search("(?P<element>(https?)[\w\.\/\-\\:]+)",All)
+    print(', '.join(links))
+    #print(len(links))
+#beginnerscraper()
+url = 'http://www.example.com'
+def webcheck (url):
     
     
-    
-    #print (soup.prettify())
-    #print (title)
-
-beginnerscraper()
+    try:
+        request = requests.get(url)
+        print(request)
+        if request.status_code == 200 :
+            return True
+    except ConnectionError as e:    # This is the correct syntax
+        print('hello')
+        request = 'no response'
+        
+        
+webcheck (url)
+if webcheck (url) == True:
+    print('hello')
