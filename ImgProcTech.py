@@ -6,8 +6,8 @@ Created on Wed Aug 28 13:13:57 2019
 @author: oscardolloway
 """
 
-
 from __future__ import print_function
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,6 +24,7 @@ from requests import get
 import numpy as np
 import re
 import requests
+    
 count = 1
 getsites = []
 
@@ -36,7 +37,7 @@ Video = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/jelly.m
 
 #video_capture = cv2.VideoCapture(0)
 
-m3u8URL = 'http://95.170.215.120/hls/m3u8-1HD.m3u8'
+m3u8URL = ['http://95.170.215.120/hls/m3u8/BT-Sport-1HD.m3u8']
 m3u8_URL = 'http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8'
 
 # =============================================================================
@@ -188,58 +189,70 @@ def Time ():
         
 
 #img1 = mpimg.imread('/Users/oscardolloway/Documents/GitHub/LogoDetection/greyimages/'+str(i))
-viddir = 'Video-Capture-assignement/'
+viddir = (os.path.dirname(os.path.abspath(sys.argv[0])))
 files = os.listdir(viddir)
 output_dir = os.path.abspath(os.path.curdir)
 VIDEO_URL = m3u8URL
 
-
+import time
 def storingtest1():
+    
+    
+    cap_dur = 5
+    cap_num = 1
+    for urls in range(len(m3u8URL)):
+        print(m3u8URL[urls])
         
-    cap = cv2.VideoCapture(VIDEO_URL)
-    
-    
-    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter('live.mp4',fourcc,24,(int(width),int(height)))
-    current_frame = 0
-    
-    a_count = 0
-    
-    
-    
-    while (cap.isOpened()):
+        cmd = [ffprobe] + '-show_format -pretty -loglevel quiet'.split()+[m3u8URL[urls]]
+        ffout = sp.check_output(cmd).decode('utf-8')
+        print(ffout)
         
-        ret, frame = cap.read()
-        a_count = a_count + 1
+        cap = cv2.VideoCapture(m3u8URL[urls])
+    
+        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter((str(cap_num)+'live.mp4'),fourcc,24,(int(width),int(height)))
+        #current_frame = 0
+    
+    
+    
+        start_time = time.time()
+        print(start_time)
+        while (int(time.time() - start_time)<cap_dur):
         
-        if ret == True:
+            ret, frame = cap.read()
+        
+            if ret == True:
+            
+                #frame = cv2.flip(frame,current_frame)
+            #print(frame)
+            #fshape = frame.shape
+            #height= fshape[0]
+            #width = fshape[1]
             
             #frame = cv2.flip(frame,current_frame)
-        #print(frame)
-        #fshape = frame.shape
-        #height= fshape[0]
-        #width = fshape[1]
-        
-        #frame = cv2.flip(frame,current_frame)
-            #print(current_frame)
-           
-            a = cv2.imshow("video", frame)
-            out.write(cv2.flip(frame, 180))
+                #print(current_frame)
+               
+                #a = cv2.imshow("video", frame)
+                out.write(cv2.flip(frame, 180))
             #print(out.get(cv2.CAP_PROP_POS_MSEC))
-        else:
-            break
+            else:
+                
+                break
+            
+            
         
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    break
         
         #print(out.get(cv2.CAP_PROP_POS_MSEC))
-        current_frame +=1
+       
     #print('a',a_count)
-    cap.release()
-    out.release()
-    cv2.destroyAllWindows()
+        cap.release()
+        out.release()
+        cv2.destroyAllWindows()
+    cap_num = cap_num +1
         
         
 # =============================================================================
@@ -252,15 +265,20 @@ def getvidmeta ():
     pipe = sp.Popen(data, stdout = sp.PIPE,bufsize=10**8)
     
 #getvidmeta()
-import json
-import pprint
 def probe_file(filename):
     
     
-    cmnd = ['ffprobe'] + '-show_format -pretty -loglevel quiet'.split()+[filename]
-    ffout = sp.check_output(cmnd).decode('utf-8')
+    cmd = [ffprobe] + '-show_format -pretty -loglevel quiet'.split()+[filename]
+    ffout = sp.check_output(cmd).decode('utf-8')
     
-    
+    cmnd = [ffprobe] +'-show_format -pretty -loglevel quiet'.split()+ [filename]
+    p = sp.Popen(cmnd, stdout=sp.PIPE, stderr=sp.PIPE)
+    data =  [ ffprobe, "-show_format", 
+             "-f", "ffmetadata", 'in.txt']
+    pipe = sp.Popen(data, stdout = sp.PIPE,bufsize=10**8)
+    out =  p.communicate()
+    duration = sp.check_output([ffprobe, '-i', 'video.mp4', '-show_entries', 'format=duration', '-v', 'quiet'])
+    print(duration)
     
     
     
@@ -278,7 +296,7 @@ def probe_file(filename):
     #    print ("========= error ========")
     #    print (err)
 
-#probe_file('live.mp4')
+probe_file('1live.mp4')
 
 
 def beginnerscraper():
@@ -319,6 +337,6 @@ def webcheck (url):
         request = 'no response'
         
         
-webcheck (url)
-if webcheck (url) == True:
-    print('hello')
+#webcheck (url)
+#if webcheck (url) == True:
+#    print('hello')
