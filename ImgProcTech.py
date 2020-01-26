@@ -37,7 +37,7 @@ Video = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/jelly.m
 
 #video_capture = cv2.VideoCapture(0)
 
-m3u8URL = ['http://95.170.215.120/hls/m3u8/BT-Sport-1HD.m3u8']
+m3u8URL = ['http://95.170.215.120/hls/m3u8/BT-Sport-1HD.m3u8','http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8']
 m3u8_URL = 'http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8'
 
 # =============================================================================
@@ -190,7 +190,8 @@ def Time ():
 
 #img1 = mpimg.imread('/Users/oscardolloway/Documents/GitHub/LogoDetection/greyimages/'+str(i))
 viddir = (os.path.dirname(os.path.abspath(sys.argv[0])))
-files = os.listdir(viddir)
+print(viddir)
+#files = os.listdir(viddir)
 output_dir = os.path.abspath(os.path.curdir)
 VIDEO_URL = m3u8URL
 
@@ -200,6 +201,7 @@ def storingtest1():
     
     cap_dur = 5
     cap_num = 1
+    print(cap_num)
     for urls in range(len(m3u8URL)):
         print(m3u8URL[urls])
         
@@ -209,13 +211,14 @@ def storingtest1():
         
         cap = cv2.VideoCapture(m3u8URL[urls])
     
-        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)# gets the correct height&width of live vid
         height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter((str(cap_num)+'live.mp4'),fourcc,24,(int(width),int(height)))
+       
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')#video type
+        out = cv2.VideoWriter((str(cap_num)+'.mp4'),fourcc,24,(int(width),int(height)))
         #current_frame = 0
     
-    
+        cap_num = cap_num +1#stores us to store new videos
     
         start_time = time.time()
         print(start_time)
@@ -231,11 +234,9 @@ def storingtest1():
             #height= fshape[0]
             #width = fshape[1]
             
-            #frame = cv2.flip(frame,current_frame)
-                #print(current_frame)
-               
-                #a = cv2.imshow("video", frame)
+                frame = cv2.flip(frame,180)# allows us to store the video, without only 1 frames stores
                 out.write(cv2.flip(frame, 180))
+                
             #print(out.get(cv2.CAP_PROP_POS_MSEC))
             else:
                 
@@ -263,24 +264,34 @@ def getvidmeta ():
     data =  [ ffprobe, "-show_format", 
              "-f", "ffmetadata", 'in.txt']
     pipe = sp.Popen(data, stdout = sp.PIPE,bufsize=10**8)
+    framecount = cv2video.get(cv2.CAP_PROP_FRAME_COUNT ) 
+    frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
+   
     
 #getvidmeta()
 def probe_file(filename):
+    #ffprobe -show_format -show_streams -loglevel quiet -print_format json YOUR_FILE
+    pipe = sp.Popen([ FFMPEG_BIN, "-i", filename,
+            # no text output
+               # disable audio
+           "-f", "image2pipe",
+           "-pix_fmt", "bgr24",
+           "-r",'1',
+           "-vcodec", "rawvideo", "-"],
+           stdin = sp.PIPE, stdout = sp.PIPE)
+  
+    out =  pipe.communicate()
     
+    import pickle
+    dataset = ['hello','test']
+    outputFile = 'test.data'
+    fw = open(outputFile, 'wb')
+    pickle.dump(dataset, fw)
+    fw.close()
+#    print(ffout)
+    #duration = sp.check_output([ffprobe, '-i', 'video.mp4', '-show_entries', 'format=duration', '-v', 'quiet'])
     
-    cmd = [ffprobe] + '-show_format -pretty -loglevel quiet'.split()+[filename]
-    ffout = sp.check_output(cmd).decode('utf-8')
-    
-    cmnd = [ffprobe] +'-show_format -pretty -loglevel quiet'.split()+ [filename]
-    p = sp.Popen(cmnd, stdout=sp.PIPE, stderr=sp.PIPE)
-    data =  [ ffprobe, "-show_format", 
-             "-f", "ffmetadata", 'in.txt']
-    pipe = sp.Popen(data, stdout = sp.PIPE,bufsize=10**8)
-    out =  p.communicate()
-    duration = sp.check_output([ffprobe, '-i', 'video.mp4', '-show_entries', 'format=duration', '-v', 'quiet'])
-    print(duration)
-    
-    
+    #print(duration)
     
     #cmnd = ['ffprobe', '-v quiet -print_format json  -show_format, -show_streams',filename]
     #cmnd = [ffprobe , '-i', filename, '-show_entries' ,  'frame=pkt_pts_time,pkt_duration_time,interlaced_frame']
@@ -296,7 +307,7 @@ def probe_file(filename):
     #    print ("========= error ========")
     #    print (err)
 
-probe_file('1live.mp4')
+probe_file('1.mp4')
 
 
 def beginnerscraper():
