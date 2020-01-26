@@ -32,8 +32,8 @@ getsites = []
 FFMPEG_BIN ='/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/ffmpeglib/bin/ffmpeg'
 ffprobe = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/ffmpeglib/bin/ffprobe'
 #cascPath = sys.argv[1]
-face_cascade = cv2.CascadeClassifier('/Users/oscardolloway/Documents/GitHub/LogoDetection/haarcascade_frontalface_default.xml')
-Video = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/jelly.mp4'
+#face_cascade = cv2.CascadeClassifier('/Users/oscardolloway/Documents/GitHub/LogoDetection/haarcascade_frontalface_default.xml')
+#Video = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/jelly.mp4'
 
 #video_capture = cv2.VideoCapture(0)
 
@@ -307,7 +307,7 @@ def probe_file(filename):
     #    print ("========= error ========")
     #    print (err)
 
-probe_file('1.mp4')
+#probe_file('1.mp4')
 
 
 def beginnerscraper():
