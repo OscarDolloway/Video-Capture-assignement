@@ -30,8 +30,9 @@ count = 1
 getsites = []
 
 
-FFMPEG_BIN ='/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/ffmpeglib/bin/ffmpeg'
-ffprobe = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/ffmpeglib/bin/ffprobe'
+viddir = (os.path.dirname(os.path.abspath(sys.argv[0])))#current directory
+FFMPEG_BIN = viddir + '/ffmpeglib/bin/ffmpeg'
+ffprobe = viddir + '/ffmpeglib/bin/ffprobe'
 #cascPath = sys.argv[1]
 #face_cascade = cv2.CascadeClassifier('/Users/oscardolloway/Documents/GitHub/LogoDetection/haarcascade_frontalface_default.xml')
 #Video = '/Users/oscardolloway/Documents/GitHub/Video-Capture-assignement/jelly.mp4'
@@ -190,8 +191,6 @@ def Time ():
         
 
 #img1 = mpimg.imread('/Users/oscardolloway/Documents/GitHub/LogoDetection/greyimages/'+str(i))
-viddir = (os.path.dirname(os.path.abspath(sys.argv[0])))
-print(viddir)
 #files = os.listdir(viddir)
 output_dir = os.path.abspath(os.path.curdir)
 VIDEO_URL = m3u8URL
