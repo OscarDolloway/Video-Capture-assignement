@@ -24,6 +24,7 @@ from requests import get
 import numpy as np
 import re
 import requests
+import time
     
 count = 1
 getsites = []
@@ -195,7 +196,7 @@ print(viddir)
 output_dir = os.path.abspath(os.path.curdir)
 VIDEO_URL = m3u8URL
 
-import time
+
 def storingtest1():
     
     
@@ -227,6 +228,8 @@ def storingtest1():
             ret, frame = cap.read()
         
             if ret == True:
+                
+                    
             
                 #frame = cv2.flip(frame,current_frame)
             #print(frame)
@@ -242,8 +245,6 @@ def storingtest1():
                 
                 break
             
-            
-        
         #if cv2.waitKey(1) & 0xFF == ord('q'):
         #    break
         
@@ -257,7 +258,7 @@ def storingtest1():
         
         
 # =============================================================================
-#storingtest1()
+storingtest1()
 # =============================================================================
 from pathlib import Path
 def getvidmeta ():
@@ -309,9 +310,9 @@ def probe_file(filename):
 
 #probe_file('1.mp4')
 
-
+url = "http://xmtvplayer.com/snippet/sample-m3u-file"
 def beginnerscraper():
-    url = "http://xmtvplayer.com/snippet/sample-m3u-file"
+    
     #content = global
     site = urlopen(url).read()
     #print(site)
@@ -334,7 +335,8 @@ def beginnerscraper():
     print(', '.join(links))
     #print(len(links))
 #beginnerscraper()
-url = 'http://www.example.com'
+
+
 def webcheck (url):
     
     
